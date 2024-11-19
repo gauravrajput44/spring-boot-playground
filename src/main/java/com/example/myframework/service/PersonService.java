@@ -10,7 +10,7 @@ import java.util.Optional;
 @Service
 public class PersonService {
 
-    private List<Person> persons = new ArrayList<>();
+    private final List<Person> persons = new ArrayList<>();
 
     public PersonService() {
         // Add some sample data
