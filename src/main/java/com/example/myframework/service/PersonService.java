@@ -31,17 +31,15 @@ public class PersonService {
         return person;
     }
 
-    public Person updatePerson(Long id, Person person) {
-        Optional<Person> personToUpdate = persons.stream()
+    public Optional<Person> updatePerson(Long id, Person person) {
+        return persons.stream()
                 .filter(p -> p.getId().equals(id))
-                .findFirst();
-
-        personToUpdate.ifPresent(p -> {
-            int index = persons.indexOf(p);  // Find index of the person to update
-            persons.set(index, person);  // Update the person in the list
-        });
-
-        return personToUpdate.orElse(null);  // Return the updated person, or null if not found
+                .findFirst()
+                .map(existingPerson -> {
+                    int index = persons.indexOf(existingPerson); // Find index of the person to update
+                    persons.set(index, person); // Update the person in the list
+                    return person; // Return the updated person
+                });
     }
 
     public boolean deletePerson(Long id) {
