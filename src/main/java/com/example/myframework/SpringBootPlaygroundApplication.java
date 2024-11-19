@@ -1,4 +1,4 @@
-package com.learn.springbootplayground;
+package com.example.myframework;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
