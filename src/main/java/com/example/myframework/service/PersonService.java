@@ -32,13 +32,16 @@ public class PersonService {
     }
 
     public Person updatePerson(Long id, Person person) {
-        for (int i = 0; i < persons.size(); i++) {
-            if (persons.get(i).getId().equals(id)) {
-                persons.set(i, person);
-                return person;
-            }
-        }
-        return null;
+        Optional<Person> personToUpdate = persons.stream()
+                .filter(p -> p.getId().equals(id))
+                .findFirst();
+
+        personToUpdate.ifPresent(p -> {
+            int index = persons.indexOf(p);  // Find index of the person to update
+            persons.set(index, person);  // Update the person in the list
+        });
+
+        return personToUpdate.orElse(null);  // Return the updated person, or null if not found
     }
 
     public boolean deletePerson(Long id) {
