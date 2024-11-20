@@ -1,20 +1,22 @@
 package com.example.myframework.model;
 
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-@Setter
+@Entity
+@Table(name = "persons")
 @Getter
+@Setter
 public class Person {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
     private String name;
-    private int age;
 
-    // Constructors, getters, and setters
-    public Person(Long id, String name, int age) {
-        this.id = id;
-        this.name = name;
-        this.age = age;
-    }
-
+    @Column(nullable = false)
+    private Integer age;
 }
+

@@ -1,48 +1,59 @@
 package com.example.myframework.service;
 
+import com.example.myframework.dto.CreatePersonDTO;
+import com.example.myframework.dto.PersonDTO;
+import com.example.myframework.exception.PersonNotFoundException;
+import com.example.myframework.mapper.PersonMapper;
 import com.example.myframework.model.Person;
+import com.example.myframework.repository.PersonRepository;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class PersonService {
 
-    private final List<Person> persons = new ArrayList<>();
+    private final PersonRepository personRepository;
+    private final PersonMapper personMapper;
 
-    public PersonService() {
-        // Add some sample data
-        persons.add(new Person(1L, "Alice", 30));
-        persons.add(new Person(2L, "Bob", 25));
+    public PersonService(PersonRepository personRepository, PersonMapper personMapper) {
+        this.personRepository = personRepository;
+        this.personMapper = personMapper;
     }
 
-    public List<Person> getAllPersons() {
-        return persons;
+    public List<PersonDTO> getAllPersons() {
+        return personRepository.findAll().stream()
+                .map(personMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
-    public Optional<Person> getPersonById(Long id) {
-        return persons.stream().filter(p -> p.getId().equals(id)).findFirst();
+    public PersonDTO getPersonById(Long id) {
+        Person person = personRepository.findById(id)
+                .orElseThrow(() -> new PersonNotFoundException("Person not found with id: " + id));
+        return personMapper.toDTO(person);
     }
 
-    public Person addPerson(Person person) {
-        persons.add(person);
-        return person;
+    public PersonDTO createPerson(CreatePersonDTO createPersonDTO) {
+        Person person = personMapper.toEntity(createPersonDTO);
+        Person savedPerson = personRepository.save(person);
+        return personMapper.toDTO(savedPerson);
     }
 
-    public Optional<Person> updatePerson(Long id, Person person) {
-        return persons.stream()
-                .filter(p -> p.getId().equals(id))
-                .findFirst()
-                .map(existingPerson -> {
-                    int index = persons.indexOf(existingPerson); // Find index of the person to update
-                    persons.set(index, person); // Update the person in the list
-                    return person; // Return the updated person
-                });
+    public PersonDTO updatePerson(Long id, PersonDTO personDTO) {
+        Person person = personRepository.findById(id)
+                .orElseThrow(() -> new PersonNotFoundException("Person not found with id: " + id));
+
+        personMapper.updateEntityFromDTO(personDTO, person);
+        Person updatedPerson = personRepository.save(person);
+        return personMapper.toDTO(updatedPerson);
     }
 
-    public boolean deletePerson(Long id) {
-        return persons.removeIf(p -> p.getId().equals(id));
+    public void deletePerson(Long id) {
+        if (!personRepository.existsById(id)) {
+            throw new PersonNotFoundException("Person not found with id: " + id);
+        }
+        personRepository.deleteById(id);
     }
 }
