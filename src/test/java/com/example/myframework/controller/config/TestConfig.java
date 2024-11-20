@@ -1,4 +1,4 @@
-package com.example.myframework.config;
+package com.example.myframework.controller.config;
 
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;

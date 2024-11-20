@@ -1,6 +1,6 @@
 package com.example.myframework.controller;
 
-import com.example.myframework.config.TestConfig;
+import com.example.myframework.controller.config.TestConfig;
 import com.example.myframework.dto.CreatePersonDTO;
 import com.example.myframework.dto.PersonDTO;
 import com.example.myframework.repository.PersonRepository;
